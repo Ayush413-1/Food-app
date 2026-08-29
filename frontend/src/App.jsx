@@ -11,8 +11,8 @@ import ProductCategory from './pages/customer/ProductCategory'
 import Cart from './pages/customer/Cart'
 import AddAddress from './pages/customer/AddAddress'
 import MyOrders from './pages/customer/MyOrders'
-import SellerLogin from './components/seller/sellerLogin'
-import SellerLayout from './pages/seller/SellerLAyout'
+import SellerLogin from './components/seller/SellerLogin'
+import SellerLayout from './pages/seller/SellerLayout'
 import AddProduct from './pages/seller/AddProduct'
 import ProductList from './pages/seller/ProductList'
 import Orders from './pages/seller/Orders'
@@ -32,7 +32,6 @@ const App = () => {
         <Routes>
           <Route path='/' element={<Home/>} />
           <Route path='/products' element={<AllProduct/>} />
-          <Route path='/products/:category' element={<ProductCategory/>} />
           <Route path='/products/:category' element={<ProductCategory/>} />
           <Route path='/cart' element={<Cart/>} />
           <Route path='/add-address' element={<AddAddress/>} />
