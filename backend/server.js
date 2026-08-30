@@ -22,27 +22,40 @@ const port = process.env.PORT || 4000;
 await connectDB();
 await connectCloudinary();
 
+
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:4173",
   "https://food-app-tunw.vercel.app",
-  "https://food-app-tunw-git-main-ayush-7330.vercel.app"
 ];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
+      // Allow requests with no origin
+      if (!origin) {
+        return callback(null, true);
       }
+
+      // Allow localhost
+      if (origin.startsWith("http://localhost:")) {
+        return callback(null, true);
+      }
+
+      // Allow all Vercel deployments of your frontend
+      if (
+        origin.endsWith(".vercel.app") &&
+        origin.includes("food-app-tunw")
+      ) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
   })
 );
-
 app.get("/", (req, res) => {
   res.send("Server is running");
 });
