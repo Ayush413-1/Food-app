@@ -26,11 +26,9 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:4173",
-  "https://food-app-tunw.vercel.app/"
+  "https://food-app-tunw.vercel.app",
+  "https://food-app-tunw-git-main-ayush-7330.vercel.app"
 ];
-
-app.use(express.json());
-app.use(cookieParser());
 
 app.use(
   cors({
@@ -42,7 +40,7 @@ app.use(
       }
     },
     credentials: true,
-  }),
+  })
 );
 
 app.get("/", (req, res) => {
