@@ -2,7 +2,6 @@ import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { v2 as cloudinary } from "cloudinary";
 
 import connectDB from "./configs/db.js";
 import connectCloudinary from "./configs/cloudinary.js";
@@ -22,31 +21,21 @@ const port = process.env.PORT || 4000;
 await connectDB();
 await connectCloudinary();
 
-
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
-  "https://food-app-tunw.vercel.app",
+  "https://food-app-tum.vercel.app",
 ];
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-
-      if (
-        allowedOrigins.includes(origin) ||
-        (origin.includes("food-app-tunw") && origin.endsWith(".vercel.app"))
-      ) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: allowedOrigins,
     credentials: true,
   })
 );
 
+app.use(express.json());
+app.use(cookieParser());
 
 app.get("/", (req, res) => {
   res.send("Server is running");
