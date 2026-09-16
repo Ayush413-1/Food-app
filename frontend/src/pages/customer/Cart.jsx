@@ -101,9 +101,6 @@ const Cart = () => {
             order_id: data.razorpayOrderId,
 
             handler: async function (response) {
-
-                console.log("Payment successful:", response);
-
                 // Verify payment on backend
                 const { data: verifyData } = await axios.post(
                     "/api/order/verify",
@@ -139,8 +136,7 @@ const Cart = () => {
 
         razorpay.open();
 
-        razorpay.on("payment.failed", function (response) {
-            console.log("Payment failed:", response.error);
+        razorpay.on("payment.failed", function () {
             toast.error("Payment failed");
         });
 

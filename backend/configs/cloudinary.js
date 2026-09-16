@@ -8,9 +8,9 @@ api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 try {
-    const result = await cloudinary.api.ping();
+    await cloudinary.api.ping();
 } catch (error) {
-    console.log("Cloudinary error:", error.message);
+    // Cloudinary connection check failed silently to avoid noisy console output.
 }
 
 };

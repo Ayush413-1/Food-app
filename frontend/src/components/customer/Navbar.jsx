@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 
 const Navbar = () => {
     const [open, setOpen] = React.useState(false)
-    const {getCartCount, axios, getCartAmount , user, setuser, setshowUserLogin, navigate,setsearchQuery, searchQuery} =useAppContext();
+    const {getCartCount, axios, getCartAmount , user, setuser, setisSeller, setshowUserLogin, navigate,setsearchQuery, searchQuery} =useAppContext();
 
     const logout =async () => {
         try {
@@ -14,6 +14,7 @@ const Navbar = () => {
             if(data.success){
                 toast.success(data.message)
                 setuser(null)
+                setisSeller(false)
                 navigate('/')
             }else{
                 toast.success(data.message)
@@ -58,6 +59,8 @@ const Navbar = () => {
                     <button className="absolute -top-2 -right-3 text-xs text-white bg-primary w-[18px] h-[18px] rounded-full">{getCartCount()}</button>
                 </div>
 
+                <NavLink to='/seller'>Seller</NavLink>
+
                 {!user ?  (
                     <button onClick={() =>{
                         setshowUserLogin(true)
@@ -66,13 +69,16 @@ const Navbar = () => {
                 </button>)
                 :
                 ( <div className='relative group'>
-                    <img src={assets.profile_icon} className='w-10' alt="" />
-                    <ul className='hidden group-hover:block absolute top-10 right-0 bg-white shadow border border-gray-200 py-2.5 w-30 rounded-md text-sm z-40'>
+                    <img src={assets.profile_icon} className='w-10 cursor-pointer' alt="Profile" onClick={() => navigate('/profile')} />
+               
+                        <ul className='hidden group-hover:block absolute top-10 right-0 bg-white shadow border border-gray-200 py-2.5 w-30 rounded-md text-sm z-40'>
                         <li onClick={() =>{
                             navigate('/my-orders')
                         }} className='p-1 pl-3 hover:bg-primary/10 cursor-pointer'>My Orders</li>
                         <li onClick={logout} className='p-1 pl-3 hover:bg-primary/10 cursor-pointer'>Logout</li>
                     </ul>
+                
+
                 </div>
                 )}
             </div>

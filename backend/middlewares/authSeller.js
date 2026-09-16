@@ -11,23 +11,23 @@ const authSeller = async (req, res, next) => {
             });
         }
 
-        const tokenDecoded = jwt.verify(
+        const decoded = jwt.verify(
             sellerToken,
             process.env.JWT_SECRET
         );
 
-        if (tokenDecoded.email !== process.env.SELLER_EMAIL) {
+        if (decoded.role !== "seller") {
             return res.status(401).json({
                 success: false,
                 message: "Not Authorized"
             });
         }
 
+        req.userId = decoded.id;
+
         next();
 
     } catch (error) {
-        console.log("AUTH SELLER ERROR:", error.message);
-
         return res.status(401).json({
             success: false,
             message: "Invalid seller token"

@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 
 const SellerLogin = () => {
     
-    const {isSeller, setisSeller, navigate, axios} = useAppContext()
+    const {isSeller, setisSeller, setuser, navigate, axios} = useAppContext()
     const [email, setemail] = useState("");
     const [password, setpassword] = useState('');
 
@@ -13,6 +13,7 @@ const SellerLogin = () => {
             event.preventDefault();
             const {data} =await axios.post('/api/seller/login',{email, password},{ withCredentials: true});
             if(data.success){
+                setuser(data.user || null)
                 setisSeller(true)
                 navigate('/seller')
             }else{
@@ -46,6 +47,7 @@ const SellerLogin = () => {
                 <p>Password</p>
                 <input onChange={(e) =>setpassword(e.target.value)} value={password} type="password" placeholder='enter your password' className='border border-gray-200 rounded w-full p-2 mt-1 outline-primary' required/>
             </div>
+        
             <button className='bg-primary-dull text-white w-full py-2 rounded-md cursor-pointer'>Login</button>
         </div>
     </form>

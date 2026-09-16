@@ -34,7 +34,6 @@ export const placeOrderCod = async (req, res) => {
 
         return res.json({success: true, message: "Order Placed successfully"})
     }catch(error){
-        console.log(error.message);
         return res.json({success: false, message: error.message})
     }
 }
@@ -98,8 +97,6 @@ export const placeOrderRazor = async (req, res) => {
         });
 
     } catch (error) {
-        console.log("RAZORPAY ERROR:", error);
-
         return res.json({
             success: false,
             message: error.message

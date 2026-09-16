@@ -13,7 +13,6 @@ const MyOrders = () => {
         setMyOrders(data.orders)
       }
     } catch (error) {
-      console.log(error);
     }
   };
 

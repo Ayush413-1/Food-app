@@ -6,7 +6,7 @@ import axios from 'axios'
 
 
 axios.defaults.withCredentials=true;
-axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
+axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
 
 export const AppContext = createContext();
 export const AppContextProvider = ({children}) =>{
@@ -21,12 +21,13 @@ export const AppContextProvider = ({children}) =>{
     const [searchQuery, setsearchQuery] = useState({})
 
 
+
     const fetchSeller = async () => {
         try {
             const {data} = await axios.get('/api/seller/is-auth');
-            console.log("Seller auth response:", data);
-            if(data.success){
-                setisSeller(true)
+            if(data.success && data.user){
+                setisSeller(data.user.role === 'seller');
+                setuser(data.user);
             }else{
                 setisSeller(false)
             }
@@ -41,17 +42,19 @@ const fetchUser = async () => {
 
         if (data.success && data.user) {
             setuser(data.user);
+            setisSeller(data.user.role === 'seller');
 
             // Load cart from database
             setcartItems(data.user.cartItems || {});
         } else {
             setuser(null);
+            setisSeller(false);
             setcartItems({});
         }
 
     } catch (error) {
-        console.log("FETCH USER ERROR:", error.message);
         setuser(null);
+        setisSeller(false);
         setcartItems({});
     }
 };
@@ -124,9 +127,9 @@ const fetchUser = async () => {
     }
 
     useEffect(() =>{
-        fetchSeller()
         fetchProducts()
-        fetchUser()
+        fetchUser();
+        fetchSeller();
     },[])
 
 useEffect(() => {
@@ -142,7 +145,6 @@ useEffect(() => {
             }
 
         } catch (error) {
-            console.log("UPDATE CART ERROR:", error.message);
         }
     };
 
@@ -152,7 +154,7 @@ useEffect(() => {
 
 }, [cartItems, user]);
 
-    const value ={setcartItems, fetchProducts , axios , getCartCount , getCartAmount,searchQuery, setsearchQuery,cartItems,removeFromCart,updateCartItem,addToCart ,currency,navigate, user, setuser, setisSeller,products, isSeller, showUserLogin,setshowUserLogin}
+    const value ={setcartItems, fetchProducts, fetchSeller, axios , getCartCount , getCartAmount,searchQuery, setsearchQuery,cartItems,removeFromCart,updateCartItem,addToCart ,currency,navigate, user, setuser, setisSeller,products, isSeller, showUserLogin,setshowUserLogin}
     
     return <AppContext.Provider value={value}>
         {children}

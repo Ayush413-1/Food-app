@@ -26,8 +26,6 @@ export const addAdress = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error.message);
-
         res.json({
             success: false,
             message: error.message
@@ -50,8 +48,6 @@ export const getAddress = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error.message);
-
         res.json({
             success: false,
             message: error.message

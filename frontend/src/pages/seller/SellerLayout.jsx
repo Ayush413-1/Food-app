@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 
 const SellerLayout = () => {
 
-    const { axios, navigate} = useAppContext();
+    const { axios, navigate, setuser, setisSeller} = useAppContext();
 
 
 
@@ -20,14 +20,16 @@ const SellerLayout = () => {
     const logout = async () => {
         try {
             const {data } = await axios.get('/api/seller/logout');
-            if(data){
+            if(data.success){
+                setuser(null)
+                setisSeller(false)
                 toast.success(data.message)
                 navigate('/')
             }else{
                 toast.error(data.message)
             }
         } catch (error) {
-            toast.error(data.message)
+            toast.error(error.response?.data?.message || error.message)
         }
     }
 

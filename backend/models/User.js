@@ -8,11 +8,17 @@ const userSchema = new mongoose.Schema({
     email: {
         type:String,
         required:true,
-        unique:true
+        lowercase: true,
+        trim: true
     },
     password: {
         type:String,
         required:true
+    },
+    role:{
+        type:String,
+        enum:["customer","seller"],
+        default:"customer",
     },
     cartItems: {
         type:Object,
@@ -20,6 +26,6 @@ const userSchema = new mongoose.Schema({
     },
 },{minimize: false})
 
-const User = mongoose.model.user || mongoose.model('user',userSchema)
+const User = mongoose.models.user || mongoose.model('user',userSchema)
 
 export default User
