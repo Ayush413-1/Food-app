@@ -24,7 +24,7 @@ await connectCloudinary();
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
-  "https://food-app-vjfl.vercel.app",
+  "https://food-app-rouge-sigma.vercel.app",
 ];
 
 app.use(
