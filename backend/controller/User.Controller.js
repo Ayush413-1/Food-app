@@ -2,10 +2,13 @@ import User from '../models/User.js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
+const isSecureCookie = process.env.NODE_ENV === 'production' || process.env.ALLOW_SECURE_COOKIES === 'true';
+
 const cookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    secure: isSecureCookie,
+    sameSite: isSecureCookie ? 'none' : 'lax',
+    path: '/',
     maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
@@ -142,13 +145,15 @@ export const logout = async (req, res) =>{
     try{
         res.clearCookie('token', {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', 
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+            secure: isSecureCookie,
+            sameSite: isSecureCookie ? 'none' : 'lax',
+            path: '/'
         });
         res.clearCookie('sellerToken', {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+            secure: isSecureCookie,
+            sameSite: isSecureCookie ? 'none' : 'lax',
+            path: '/'
         });
         return res.json({success: true, message: "Logged Out"})
     }catch(error){

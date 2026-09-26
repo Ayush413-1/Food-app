@@ -18,6 +18,8 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 4000;
 
+app.set("trust proxy", 1);
+
 await connectDB();
 await connectCloudinary();
 
@@ -29,8 +31,17 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 

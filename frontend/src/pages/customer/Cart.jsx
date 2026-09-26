@@ -56,6 +56,31 @@ const Cart = () => {
     }
   };
 
+  const loadRazorpayScript = () =>
+    new Promise((resolve, reject) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+
+      const existingScript = document.querySelector(
+        'script[src="https://checkout.razorpay.com/v1/checkout.js"]'
+      );
+
+      if (existingScript) {
+        existingScript.addEventListener("load", () => resolve(true), { once: true });
+        existingScript.addEventListener("error", () => reject(new Error("Payment gateway failed to load")), { once: true });
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+      script.onload = () => resolve(true);
+      script.onerror = () => reject(new Error("Payment gateway failed to load"));
+      document.body.appendChild(script);
+    });
+
   const placeOrder = async () => {
     try {
       if (!selectedAddress) {
@@ -90,55 +115,60 @@ const Cart = () => {
     });
 
     if (data.success) {
+        try {
+            await loadRazorpayScript();
 
-        const options = {
-            key: data.key,
-            amount: data.amount,
-            currency: data.currency,
-            name: "Food App",
-            description: "Order Payment",
+            if (!window.Razorpay) {
+                throw new Error("Razorpay checkout is unavailable right now. Please try again.");
+            }
 
-            order_id: data.razorpayOrderId,
+            const options = {
+                key: data.key,
+                amount: data.amount,
+                currency: data.currency,
+                name: "Food App",
+                description: "Order Payment",
 
-            handler: async function (response) {
-                // Verify payment on backend
-                const { data: verifyData } = await axios.post(
-                    "/api/order/verify",
-                    {
-                        razorpay_order_id: response.razorpay_order_id,
-                        razorpay_payment_id: response.razorpay_payment_id,
-                        razorpay_signature: response.razorpay_signature,
-                        orderId: data.orderId,
+                order_id: data.razorpayOrderId,
+
+                handler: async function (response) {
+                    const { data: verifyData } = await axios.post(
+                        "/api/order/verify",
+                        {
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                            orderId: data.orderId,
+                        }
+                    );
+
+                    if (verifyData.success) {
+                        toast.success("Payment successful");
+                        setcartItems({});
+                        navigate("/my-orders");
+                    } else {
+                        toast.error(verifyData.message);
                     }
-                );
+                },
 
-                if (verifyData.success) {
-                    toast.success("Payment successful");
+                prefill: {
+                    name: user.name,
+                    email: user.email,
+                },
 
-                    setcartItems({});
-                    navigate("/my-orders");
-                } else {
-                    toast.error(verifyData.message);
-                }
-            },
+                theme: {
+                    color: "#3399cc",
+                },
+            };
 
-            prefill: {
-                name: user.name,
-                email: user.email,
-            },
-
-            theme: {
-                color: "#3399cc",
-            },
-        };
-
-        const razorpay = new window.Razorpay(options);
-
-        razorpay.open();
-
-        razorpay.on("payment.failed", function () {
-            toast.error("Payment failed");
-        });
+            const razorpay = new window.Razorpay(options);
+            razorpay.on("payment.failed", function () {
+                toast.error("Payment failed");
+            });
+            razorpay.open();
+        } catch (error) {
+            toast.error(error.message || "Unable to load payment gateway");
+        }
 
     } else {
         toast.error(data.message);
