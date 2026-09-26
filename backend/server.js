@@ -27,12 +27,19 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "https://food-app-rouge-sigma.vercel.app",
+  "https://food-app-ayush-7330.vercel.app",
 ];
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+  return /^https:\/\/.*\.vercel\.app$/i.test(origin);
+};
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (isAllowedOrigin(origin)) {
         callback(null, true);
         return;
       }
@@ -42,6 +49,7 @@ app.use(
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    exposedHeaders: ["Set-Cookie"],
   })
 );
 
